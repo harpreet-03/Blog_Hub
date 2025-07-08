@@ -45,8 +45,8 @@ A modern, feature-rich file sharing platform built with Django 5.x and Bootstrap
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd Django-WebApp
+   git clone https://github.com/harpreet-03/Blog_Hub.git
+   cd Blog_Hub
    ```
 
 2. **Create a virtual environment**
