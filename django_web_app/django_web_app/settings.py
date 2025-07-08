@@ -29,7 +29,11 @@ DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 if os.environ.get('RAILWAY_ENVIRONMENT') or os.environ.get('VERCEL') or os.environ.get('RENDER'):
     DEBUG = False
 
-ALLOWED_HOSTS = ['*'] if not DEBUG else []
+ALLOWED_HOSTS = ['*'] if not DEBUG else ['127.0.0.1', 'localhost']
+
+# Add Vercel domains to ALLOWED_HOSTS
+if os.environ.get('VERCEL'):
+    ALLOWED_HOSTS = ['*']  # Vercel handles domain routing
 
 
 # Application definition

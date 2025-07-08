@@ -10,14 +10,15 @@ export DEBUG=False
 # Change to django_web_app directory
 cd django_web_app
 
-# Run migrations
-echo "📝 Running migrations..."
+# Generate and run migrations
+echo "📝 Generating and running migrations..."
+python manage.py makemigrations --noinput
 python manage.py migrate
 
 # Collect static files
 echo "🎨 Collecting static files..."
 python manage.py collectstatic --noinput
 
-# Start gunicorn
+# Start gunicorn using python module
 echo "🌐 Starting server..."
-gunicorn django_web_app.wsgi:application --bind 0.0.0.0:$PORT
+python -m gunicorn django_web_app.wsgi:application --bind 0.0.0.0:$PORT
