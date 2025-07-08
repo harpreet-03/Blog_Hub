@@ -3,12 +3,15 @@
 # Railway deployment script
 echo "🚀 Starting Django deployment..."
 
+# Set production environment
+export RAILWAY_ENVIRONMENT=production
+export DEBUG=False
+
 # Change to django_web_app directory
 cd django_web_app
 
 # Run migrations
 echo "📝 Running migrations..."
-python manage.py makemigrations
 python manage.py migrate
 
 # Collect static files
