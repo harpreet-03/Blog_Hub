@@ -1,4 +1,4 @@
-# 📁 Django File Sharing Web Application | ![Live Link](http://127.0.0.1:8000)
+# 📁 Django File Sharing Web Application 
 
 A modern, feature-rich file sharing platform built with Django 5.x and Bootstrap 5. This application allows users to upload, share, and manage files with a beautiful, responsive interface.
 
