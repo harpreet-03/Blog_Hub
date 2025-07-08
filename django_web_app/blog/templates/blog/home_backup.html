@@ -1,0 +1,236 @@
+{% extends "blog/base.html" %}
+{% load static %}
+
+{% block content %}
+    <!-- Hero Section for Unauthenticated Users -->
+    {% if not user.is_authenticated %}
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="display-4 fw-bold">Welcome to FileShare Hub</h1>
+            <p class="lead">Share files seamlessly with friends, colleagues, and collaborators in a modern, secure environment.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'register' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>Get Started
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- File Stats for Authenticated Users -->
+    {% if user.is_authenticated %}
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="stats-card text-center">
+                <div class="stats-number">{{ posts.count }}</div>
+                <h5 class="text-muted">Total Files</h5>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card text-center">
+                <div class="stats-number">{{ user.post_set.count }}</div>
+                <h5 class="text-muted">My Files</h5>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card text-center">
+                <div class="stats-number">{{ posts.count|add:"-"|add:user.post_set.count }}</div>
+                <h5 class="text-muted">Shared with Me</h5>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Search Results Header -->
+    {% if request.GET.q %}
+    <div class="alert alert-info">
+        <i class="fas fa-search me-2"></i>
+        Search results for "<strong>{{ request.GET.q }}</strong>" - {{ posts.count }} file(s) found
+    </div>
+    {% endif %}
+
+    <!-- Files Grid -->
+    <div class="row">
+        {% for post in posts %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="file-card h-100 fade-in-up">
+                <div class="card-body p-4">
+                    <!-- File Header -->
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{{ post.author.profile.image.url }}" 
+                             alt="{{ post.author.username }}" 
+                             class="user-avatar me-3">
+                        <div>
+                            <h6 class="mb-0">
+                                <a href="{% url 'user-posts' post.author.username %}" 
+                                   class="text-decoration-none">
+                                    {{ post.author.username }}
+                                </a>
+                            </h6>
+                            <small class="text-muted">{{ post.date_posted|date:"M d, Y" }}</small>
+                        </div>
+                    </div>
+
+                    <!-- File Icon and Info -->
+                    <div class="text-center mb-3">
+                        {% if post.file %}
+                            {% with post.extension as ext %}
+                                {% if ext in '.jpg,.jpeg,.png,.gif,.bmp,.svg' %}
+                                    <div class="file-icon image">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                {% elif ext in '.mp4,.avi,.mov,.wmv,.flv,.webm' %}
+                                    <div class="file-icon video">
+                                        <i class="fas fa-video"></i>
+                                    </div>
+                                {% elif ext in '.pdf,.doc,.docx,.txt,.rtf' %}
+                                    <div class="file-icon document">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                {% elif ext in '.py,.js,.html,.css,.java,.cpp,.c' %}
+                                    <div class="file-icon code">
+                                        <i class="fas fa-code"></i>
+                                    </div>
+                                {% elif ext in '.zip,.rar,.7z,.tar,.gz' %}
+                                    <div class="file-icon archive">
+                                        <i class="fas fa-archive"></i>
+                                    </div>
+                                {% else %}
+                                    <div class="file-icon default">
+                                        <i class="fas fa-file"></i>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        {% else %}
+                            <div class="file-icon default">
+                                <i class="fas fa-sticky-note"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- File Title and Content -->
+                    <h5 class="card-title">
+                        <a href="{% url 'post-detail' post.id %}" 
+                           class="text-decoration-none text-dark">
+                            {{ post.title|truncatechars:30 }}
+                        </a>
+                    </h5>
+                    <p class="card-text text-muted">
+                        {{ post.content|truncatechars:80 }}
+                    </p>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                        <div class="d-flex gap-2">
+                            {% if post.file %}
+                                <a href="{{ post.file.url }}" 
+                                   download 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'post-detail' post.id %}" 
+                               class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                        
+                        {% if post.file %}
+                            {% with post.extension as ext %}
+                                {% if ext in '.jpg,.jpeg,.png,.gif,.bmp' %}
+                                    <span class="badge badge-image text-white">Image</span>
+                                {% elif ext in '.mp4,.avi,.mov,.wmv' %}
+                                    <span class="badge badge-video text-white">Video</span>
+                                {% elif ext in '.pdf,.doc,.docx,.txt' %}
+                                    <span class="badge badge-document text-white">Document</span>
+                                {% elif ext in '.py,.js,.html,.css,.java' %}
+                                    <span class="badge badge-code text-white">Code</span>
+                                {% elif ext in '.zip,.rar,.7z' %}
+                                    <span class="badge badge-archive text-white">Archive</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">File</span>
+                                {% endif %}
+                            {% endwith %}
+                        {% else %}
+                            <span class="badge bg-info text-white">Note</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">No files found</h4>
+                <p class="text-muted">
+                    {% if user.is_authenticated %}
+                        Be the first to share a file! 
+                        <a href="{% url 'post-create' %}" class="btn btn-gradient ms-2">
+                            <i class="fas fa-plus me-1"></i>Upload File
+                        </a>
+                    {% else %}
+                        Sign up to start sharing files with others.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+      </article>
+      </div>   
+    {% endfor %}
+    {% if is_paginated %}
+
+      {% if page_obj.has_previous %}
+        <a class="btn btn-outline-info mb-4" href="?page=1">First</a>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-5">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">
+                        <i class="fas fa-angle-double-left"></i> First
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                        <i class="fas fa-angle-left"></i> Previous
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                        Next <i class="fas fa-angle-right"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                        Last <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+{% endblock content %}

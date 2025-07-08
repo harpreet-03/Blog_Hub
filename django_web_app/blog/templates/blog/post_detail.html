@@ -1,47 +1,154 @@
 {% extends "blog/base.html" %}
+{% load static %}
+
 {% block content %}
-<div class="jumbotron mt-3 shadow-lg">
-<article class="media content-section shadow ">
-   <a href="{{ object.author.profile.image.url }} " target="_blank"> <img src="{{ object.author.profile.image.url }}  " alt="" class="article-img rounded-circle img-thumbnail img-fluid">
-   </a>
-    <div class="media-body">
-      <div class="">
-        <div class="d-flex justify-content-between">
-        <a class="mr-2 mt-0 mb-0  text-dark" href="{% url 'user-posts' object.author.username  %}"><h3>{{ object.author }}</h3></a>
-        <small class="text-muted  text-align-right">{{ object.date_upload }}</small>
-        </div>
-        {% if object.author != user %}
-          <div class="form-group mt-0 pt-0 d-flex justify-content-end">          
-            <a href="{{ object.file.url }}" download class="btn btn-primary flex-last" type="submit"><i class="fas fa-download"></i> Downlaod</a>
-          </div>
-        {% endif %}
-        <hr>
-        {% if object.author == user %}
-          <div>
-            <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}">Update</a>
-            <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}">Delete</a>
-          </div>
-        {% endif %}
-      </div>
-      <div>
-        {% if object.file %}
-          {% if object.extension == '.jpg' or object.extension == 'jpeg' or object.extension == 'png' %}
-            <a href="{{ object.file.url }}"  download ><img src="{{ object.file.url }}" alt="" class="img-fluid "></a>
-            <a href="{{ object.file.url }}"  download class="text-dark"><h5>{{ object.file }}</h5></a>
-          {% elif object.extension == '.mp4' %}
-            <div class="embed-responsive embed-responsive-16by9">
-              <video id="video-1_html_api" class="vjs-tech" preload="auto" autoplay >
-                <source src="{{ object.file.url }}" type="video/mp4" class="embed-responsive">
-              </video>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="file-card fade-in-up">
+            <div class="card-body p-4">
+                <!-- File Header -->
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ object.author.profile.image.url }}" 
+                             alt="{{ object.author.username }}" 
+                             class="user-avatar me-3"
+                             style="width: 60px; height: 60px;">
+                        <div>
+                            <h5 class="mb-1">
+                                <a href="{% url 'user-posts' object.author.username %}" 
+                                   class="text-decoration-none">
+                                    {{ object.author.username }}
+                                </a>
+                            </h5>
+                            <small class="text-muted">{{ object.date_posted|date:"F d, Y at g:i A" }}</small>
+                            <div class="mt-1">
+                                {% if object.is_public %}
+                                    <span class="badge bg-success"><i class="fas fa-globe me-1"></i>Public</span>
+                                {% else %}
+                                    <span class="badge bg-warning"><i class="fas fa-lock me-1"></i>Private</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    {% if object.author == user %}
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'post-update' object.id %}">
+                                <i class="fas fa-edit me-2"></i>Edit
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'share-file' object.id %}">
+                                <i class="fas fa-share-alt me-2"></i>Share
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'post-delete' object.id %}">
+                                <i class="fas fa-trash me-2"></i>Delete
+                            </a></li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- File Title and Description -->
+                <h2 class="mb-3">{{ object.title }}</h2>
+                <p class="text-muted mb-4">{{ object.content }}</p>
+
+                <!-- File Preview/Download Section -->
+                {% if object.file %}
+                <div class="text-center mb-4">
+                    {% with object.extension as ext %}
+                        {% if ext in '.jpg,.jpeg,.png,.gif,.bmp,.svg' %}
+                            <!-- Image Preview -->
+                            <div class="mb-3">
+                                <img src="{{ object.file.url }}" 
+                                     alt="{{ object.title }}" 
+                                     class="img-fluid rounded shadow"
+                                     style="max-height: 400px;">
+                            </div>
+                        {% elif ext in '.mp4,.avi,.mov,.wmv,.webm' %}
+                            <!-- Video Preview -->
+                            <div class="mb-3">
+                                <video controls class="img-fluid rounded shadow" style="max-height: 400px;">
+                                    <source src="{{ object.file.url }}" type="video/{{ ext|slice:'1:' }}">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                        {% else %}
+                            <!-- File Icon for Other Types -->
+                            <div class="file-icon {{ object.get_file_type }} mx-auto mb-3" 
+                                 style="width: 100px; height: 100px; font-size: 48px;">
+                                {% if ext in '.pdf,.doc,.docx,.txt,.rtf' %}
+                                    <i class="fas fa-file-alt"></i>
+                                {% elif ext in '.py,.js,.html,.css,.java,.cpp,.c' %}
+                                    <i class="fas fa-code"></i>
+                                {% elif ext in '.zip,.rar,.7z,.tar,.gz' %}
+                                    <i class="fas fa-archive"></i>
+                                {% else %}
+                                    <i class="fas fa-file"></i>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <!-- File Info -->
+                    <div class="row text-center mb-3">
+                        <div class="col-md-4">
+                            <div class="stats-card">
+                                <div class="stats-number">{{ object.download_count }}</div>
+                                <small class="text-muted">Downloads</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stats-card">
+                                <div class="stats-number">{{ object.get_file_size_display }}</div>
+                                <small class="text-muted">File Size</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stats-card">
+                                <div class="stats-number">{{ object.shared_with.count }}</div>
+                                <small class="text-muted">Shared With</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Download Button -->
+                    <a href="{{ object.file.url }}" download class="btn btn-gradient btn-lg">
+                        <i class="fas fa-download me-2"></i>Download File
+                    </a>
+                </div>
+                {% else %}
+                <!-- Text-only post -->
+                <div class="text-center py-4">
+                    <i class="fas fa-sticky-note fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">Text Note</h5>
+                </div>
+                {% endif %}
+
+                <!-- Shared With Section -->
+                {% if object.shared_with.all %}
+                <div class="mt-4">
+                    <h6>Shared with:</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for shared_user in object.shared_with.all %}
+                        <div class="d-flex align-items-center bg-light rounded p-2">
+                            <img src="{{ shared_user.profile.image.url }}" 
+                                 alt="{{ shared_user.username }}" 
+                                 class="user-avatar me-2"
+                                 style="width: 25px; height: 25px;">
+                            <small>{{ shared_user.username }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
             </div>
-            <a href="{{ object.file.url }}"  download class="text-dark"><h5>{{ object.file }}</h5></a>
-          {% else %}
-            <a href="{{ object.file.url }}"  download class="text-dark"><h5>{{ object.file }}</h5></a>
-          {% endif %}
-        {% endif %}
-      </div>
-      <h2>{{ object.title }}</h2>
-      <p class="article-content">{{ object.content }}</p>
+        </div>
     </div>
-  </article>
+</div>
 {% endblock content %}

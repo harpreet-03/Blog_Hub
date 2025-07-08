@@ -16,7 +16,8 @@ urlpatterns = [
     path('post/new/', PostCreateView.as_view(), name='post-create'),
     path('post/<int:pk>/update/', PostUpdateView.as_view(), name='post-update'),
     path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post-delete'),
-    path('media/Files/<int:pk>',PostDeleteView.as_view(),name='post-delete' ),
-    path('search/',views.search,name='search' ),
+    path('post/<int:post_id>/share/', views.share_file, name='share-file'),
+    path('search/', views.search, name='search'),
+    path('users/search/', views.user_search, name='user-search'),
     path('about/', views.about, name='blog-about'),
 ]
