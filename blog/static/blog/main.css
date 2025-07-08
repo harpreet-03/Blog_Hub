@@ -1,0 +1,133 @@
+/* Modern FileShare Hub Styles */
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Card Styles */
+.file-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    border: none;
+    overflow: hidden;
+}
+
+.file-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.file-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.file-icon.image { background: var(--primary-gradient); }
+.file-icon.video { background: var(--secondary-gradient); }
+.file-icon.document { background: var(--success-gradient); }
+.file-icon.code { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+.file-icon.archive { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+.file-icon.default { background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); }
+
+/* Hero Section */
+.hero-section {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 80px 0;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 30px;
+}
+
+/* Buttons */
+.btn-gradient {
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+/* Form Styles */
+.form-modern {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: var(--card-shadow);
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 12px 15px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+    
+    .navbar-brand {
+        font-size: 1.5rem !important;
+    }
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease;
+}

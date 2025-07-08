@@ -1,0 +1,94 @@
+{% extends "blog/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="form-modern fade-in-up">
+            <div class="text-center mb-4">
+                <i class="fas fa-share-alt fa-3x" style="color: #667eea;"></i>
+                <h2 class="mt-3 mb-2">Share File</h2>
+                <p class="text-muted">Choose users to share "{{ post.title }}" with</p>
+            </div>
+            
+            <!-- File Info -->
+            <div class="alert alert-info">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-file fa-2x me-3"></i>
+                    <div>
+                        <h6 class="mb-1">{{ post.title }}</h6>
+                        <small class="text-muted">{{ post.content|truncatechars:100 }}</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Already Shared With -->
+            {% if already_shared %}
+            <div class="mb-4">
+                <h6>Already shared with:</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for user in already_shared %}
+                    <span class="badge bg-success">
+                        <i class="fas fa-user me-1"></i>{{ user.username }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Share Form -->
+            <form method="POST">
+                {% csrf_token %}
+                <h6 class="mb-3">Select users to share with:</h6>
+                
+                <div class="row">
+                    {% for user in users %}
+                    <div class="col-md-6 mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" 
+                                   name="users" value="{{ user.id }}" 
+                                   id="user_{{ user.id }}"
+                                   {% if user in already_shared %}disabled{% endif %}>
+                            <label class="form-check-label d-flex align-items-center" 
+                                   for="user_{{ user.id }}">
+                                <img src="{{ user.profile.image.url }}" 
+                                     alt="{{ user.username }}" 
+                                     class="user-avatar me-2"
+                                     style="width: 30px; height: 30px;">
+                                <div>
+                                    <strong>{{ user.username }}</strong>
+                                    {% if user.first_name or user.last_name %}
+                                        <br><small class="text-muted">{{ user.first_name }} {{ user.last_name }}</small>
+                                    {% endif %}
+                                </div>
+                                {% if user in already_shared %}
+                                    <span class="badge bg-success ms-auto">Shared</span>
+                                {% endif %}
+                            </label>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="text-center py-4">
+                            <i class="fas fa-users fa-2x text-muted mb-3"></i>
+                            <p class="text-muted">No other users found to share with</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                {% if users %}
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <a href="{% url 'post-detail' post.id %}" class="btn btn-outline-secondary me-md-2">
+                        <i class="fas fa-times me-1"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-gradient">
+                        <i class="fas fa-share-alt me-1"></i>Share File
+                    </button>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
